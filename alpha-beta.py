@@ -40,6 +40,7 @@ def prunning(hijo,niv,nivT,nhijo,nhijT,tag):
             tree.get_node(hijo._fpointer[hijo.tag["hijosV"]]).tag["alpha"]=hijo.tag["alpha"]
             tree.get_node(hijo._fpointer[hijo.tag["hijosV"]]).tag["beta"]=hijo.tag["beta"]
             #EL PROBLEMA
+            print("he revisado esta cantidad de mis hijos",hijo.tag["hijosV"])
             tag=hijo._fpointer[hijo.tag["hijosV"]]
             #tree.show()
             #raw_input("test")
@@ -88,21 +89,37 @@ def prunning(hijo,niv,nivT,nhijo,nhijT,tag):
                                 hijo.tag["visit"]=True
                             
 
-                        print("AAAAAAAH",hijo._fpointer[hijo.tag["hijosV"]-2])
-                        prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,hijo.identifier+1)
+                        print("AAAAAAAH",tag)
+                        prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,tag)
                 else:
                     #hijo.tag["hijosV"]=nhijT
                     print("ya casi", tag)
-                    prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,tag+1)
+                    tree.get_node(hijo._bpointer).tag["hijosV"]+=1
+                    print("Siguiente hijo prueba", tag + (nhijT-hijo.tag["hijosV"]))
+
+                    temp = tag + (nhijT-hijo.tag["hijosV"])
+
+                    try:
+                        print("Siguiente hijo prueba 2",tree.get_node(hijo._bpointer)._fpointer[tree.get_node(hijo._bpointer).tag["hijosV"]] )
+                    except Exception:
+                        temp=tree.get_node(hijo._bpointer)._bpointer
+                    try:
+                        tree.get_node(temp).is_leaf()
+                    except Exception:
+                        temp=tree.get_node(hijo._bpointer)._bpointer
+
+                    prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,temp)
             else:
                 if(hijo.tag["alpha"]<hijo.tag["beta"]):
                     if(tree.level(hijo.identifier)%2==0):
                         if(hijo.tag["alpha"]<tree.get_node(tag).tag["beta"]):
-                            hijo.tag["alpha"]=tree.get_node(tag).tag["beta"]
+                            tree.get_node(tag).tag["beta"]=hijo.tag["alpha"]
                     else:
                         if(hijo.tag["beta"]>tree.get_node(tag).tag["alpha"]):
-                            print tree.get_node(tag).tag["alpha"]
-                            hijo.tag["beta"]=tree.get_node(tag).tag["alpha"]
+                            print ("Aqui es el -999 raro",tree.get_node(tag).tag["alpha"])
+                            print("Nodo en el que estoy",hijo.identifier)
+                            print("nodo que voy a revisar",tag)
+                            tree.get_node(tag).tag["alpha"]=hijo.tag["beta"]
                     tree.get_node(tag).tag["visit"]=True
                     #hijo.tag["hijosV"]+=1
                     tag+=1
@@ -111,10 +128,12 @@ def prunning(hijo,niv,nivT,nhijo,nhijT,tag):
                     if(hijo.tag["hijosV"]<nhijT):
                         prunning(hijo,niv,nivT,nhijo+1,nhijT,hijo._fpointer[hijo.tag["hijosV"]])
                     else:
-                        prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,hijo._fpointer[hijo.tag["hijosV"]])
+                        tree.get_node(hijo._bpointer).tag["hijosV"]+=1
+                        prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,tag)
                 else:
-                    tree.get_node(tag).tag["hijosV"]=nhijT
-                    prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,hijo._fpointer[hijo.tag["hijosV"]])
+                    #tree.get_node(tag).tag["hijosV"]=nhijT
+                    tree.get_node(hijo._bpointer).tag["hijosV"]+=1
+                    prunning(tree.get_node(hijo._bpointer),niv-1,nivT,nhijo+1,nhijT,tag)
 
 
                 #prunning(tree.get_node(hijo._bpointer),niv-1,nivT,0,nhijT,tag+1)
